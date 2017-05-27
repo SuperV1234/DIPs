@@ -61,7 +61,7 @@ void foo() @nogc
 ```d
 void foo() @nogc
 {
-    struct anonymous_l
+    static struct anonymous_l
     {
         void opCall() { writeln("hello!"); }
     }
@@ -85,7 +85,7 @@ void foo() @nogc
 ```d
 void foo() @nogc
 {
-    struct anonymous_l
+    static struct anonymous_l
     {
         int i;
         this(int i) { this.i = i; }
@@ -117,24 +117,26 @@ void foo() @nogc
 ```d
 void foo() @nogc
 {
-    struct anonymous_l
+    static struct anonymous_l
     {
         NonCopyable n;
         this(NonCopyable n) { this.n = __compiler_move(n); } // i.e. compiler constructs n in-place
         auto opCall() { return n.i; }
     }
-    
+
     auto l = anonymous_l(NonCopyable(42));
 }
 ```
 
 #### Capture by reference
 
+Only allowed in `@system` code.
+
 ```d
 void foo() @nogc
 {
     int i = 10;
-    auto l = [ref i]() => writeln(i);
+    auto l = [&i]() => writeln(i);
 }
 ```
 
@@ -143,17 +145,18 @@ void foo() @nogc
 ```d
 void foo() @nogc
 {
-    struct anonymous_l
+    static struct anonymous_l
     {
-        ref int _i;
-        this(ref int i) { _i = i; }
-        auto opCall() { writeln("hello!"); }
+        int* _i;
+        this(ref int i) { _i = &i; }
+        auto opCall() { writeln(*i); }
     }
 
     int i = 10;
     auto l = anonymous_l(i);
 }
 ```
+
 TODO: propose deprecating current "always-by-reference" approach in favor of explicit by-reference capture. "scope" keyword should be used to determine whether a dynamic allocation is required for by-reference captures.
 
 ## Copyright & License
