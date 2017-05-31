@@ -38,6 +38,29 @@ change.  An existing, well-known issue or a use case for an existing projects
 can greatly increase the chances of the DIP being understood and carefully
 evaluated.
 
+### Proposed New Syntax
+
+```
+ValueFunctionLiteral:
+    [ CaptureParameterList_opt ] ParameterMemberAttributes FunctionLiteralBody
+    [ CaptureParameterList_opt ] Identifier => Expression
+
+CaptureParameterList:
+    CaptureParameter
+    CaptureParameter , CaptureParameterList
+
+CaptureParameter:
+    ValueCapture
+    RefCapture
+
+ValueCapture:
+    Identifier
+    Identifier = Expression
+
+RefCapture:
+    ref Identifier
+```
+
 ### Breaking changes / deprecation process
 
 This paper proposes a pure language extension: no existing code will become invalid.
